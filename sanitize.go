@@ -21,8 +21,6 @@ var (
 	defaultAttributes = []string{"id", "class", "src", "href", "title", "alt", "name", "rel"}
 )
 
-func wrap
-
 // HTMLAllowing sanitizes html, allowing some tags.
 // Arrays of allowed tags and allowed attributes may optionally be passed as the second and third arguments.
 func HTMLAllowing(s string, args ...[]string) (string, error) {
