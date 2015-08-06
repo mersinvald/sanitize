@@ -50,7 +50,11 @@ func HTMLAllowing(s string, args ...[]string) (string, error) {
 			err := tokenizer.Err()
 			if err == io.EOF {
 				output := buffer.String()
-				// Remove a few common harmless entities, to arrive at something more like plain text
+				// Then replace line breaks with newlines, to preserve that formatting
+				output = strings.Replace(output, "</p>", "\n", -1)
+				output = strings.Replace(output, "<br>", "\n", -1)
+				output = strings.Replace(output, "</br>", "\n", -1)
+				output = strings.Replace(output, "<br/>", "\n", -1)
 				output = strings.Replace(output, "&#8216;", "'", -1)
 				output = strings.Replace(output, "&#8217;", "'", -1)
 				output = strings.Replace(output, "&#8220;", "\"", -1)
@@ -58,21 +62,15 @@ func HTMLAllowing(s string, args ...[]string) (string, error) {
 				output = strings.Replace(output, "&nbsp;", " ", -1)
 				output = strings.Replace(output, "&quot;", "\"", -1)
 				output = strings.Replace(output, "&apos;", "'", -1)
-
-				// Translate some entities into their plain text equivalent (for example accents, if encoded as entities)
-				output = html.UnescapeString(output)
-
-				// In case we have missed any tags above, escape the text - removes <, >, &, ' and ".
-				output = template.HTMLEscapeString(output)
-
 				// After processing, remove some harmless entities &, ' and " which are encoded by HTMLEscapeString
 				output = strings.Replace(output, "&#34;", "\"", -1)
 				output = strings.Replace(output, "&#39;", "'", -1)
 				output = strings.Replace(output, "&amp; ", "& ", -1)     // NB space after
 				output = strings.Replace(output, "&amp;amp; ", "& ", -1) // NB space after
-
+				output = strings.Replace(output, "&lt;", "<", -1)
+				output = strings.Replace(output, "&gt;", ">", -1)
+				//done preformatting
 				return output, nil
-				return buffer.String(), nil
 			}
 			return "", err
 
